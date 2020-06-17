@@ -1,13 +1,60 @@
 #!/bin/bash
+#
+# get_wcssp_multiple is for retrieving multiple netcdf files from the MOOSE WCSSP_India
+# database on JASMIN. This script should be placed on JASMIN and run on a MASS Server.
+# The script will get multiple files between two specified dates and either concatenate
+# them into one (along the time dimension) or simple place them all in a specified
+# directory. It takes advantage of the strict file naming rules.
+#
+# At it's most basic, the script can be run as:
+#	get_wcssp_multiple.sh <start_date> <end_date> <output_directory> --concat false 
+#	+optional_args
+#
+# This will get data for the default configuration/data type settings in the script. Dates
+# should ideally be of form YYYYMMDD. The default scripts gets files between the specified 
+# dates for ALL grids (T U V) and ALL variables. These can be changed using the optional 
+# args:
+#
+#	--concat [default: true]
+#		Whether or not to concatenate files along time dimension.
+#	--cfg_name [default: rosie_u-bf945oeco8coare]
+#		Name of the configuration for which to get data. Can be found no the WP1.2 wiki
+#	--t_freq [default: '1h']
+#		Output frequency of data -- either '1h' or '1d'
+#	--run_id [default: 'ind']
+#		Run identification. For WCSSP, can be kept as default.
+#	--data_type [default: 'shelftmb']
+#		Either 25hourm, mersea, shelftmb or hrsea (see wiki)
+#	--U [default: All grids are selected, all data downloaded]
+#		Tells the script to get U data. Must be followed by either 'all' or a string of
+#		ncks type flags. E.G. "-v nav_lon,nav_lat,vozocrtx"
+#	--V [default: All grids are selected, all data downloaded]
+#		Tells the script to get V data. Must be followed by either 'all' or a string of
+#		ncks type flags. E.G. "-v nav_lon,nav_lat,vomecrty"
+#	--T [default: All grids are selected, all data downloaded]
+#		Tells the script to get T data. Must be followed by either 'all' or a string of
+#		ncks type flags. E.G. "-v nav_lon,nav_lat,sossheig"
+#	--runstart [default: 20160109]
+#		When the run was started.
+#
+# An example with optional flags:
+#
+#	get_wcssp_multiple.sh 20180101 20180105 ./jan18 --concat false --data_type mersea
+#		--t_freq '1d' --U --T '-v nav_lon,nav_lat,votemper_top'
+#
+# This gets all files between 2018-01-01 and 2018-01-05 and puts them into the jan18 dir.
+# It downloads just the U and T grid data. For the U grid, it gets everything. For the T
+# grid it only get nav_lon, nav_lat and votemper_top.
+#_______________________________________________________________________________________#
 
 ## INPUT ARGUMENTS -- DEFAULTS ##
 # DEFAULT ARGUMENTS
-export concat=true               # Concatenate data into one file or keep separate
+export concat=true               
 export cfg_name=rosie_u-bf945oeco8coare
-export t_freq='1h'               # COAsT: Either '1h' or '1d'
-export run_id=ind                # COAsT: Keep as ind
-export data_type='shelftmb'      # COAsT: 25hourm, mersea, shelftmb or hrsea
-export runstart=20160109         # COAsT: Can probably be kept as 20160109
+export t_freq='1h'               
+export run_id=ind                
+export data_type='shelftmb'      
+export runstart=20160109         
 
 ## PARSE INPUT ARGUMENTS, IF ANY
 export POSITIONAL=()
