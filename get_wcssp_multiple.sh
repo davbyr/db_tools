@@ -1,5 +1,8 @@
 #!/bin/bash
 #
+# Author: David Byrne (dbyrne@noc.ac.uk)
+# v1.0 (17/06/20)
+#
 # get_wcssp_multiple is for retrieving multiple netcdf files from the MOOSE WCSSP_India
 # database on JASMIN. This script should be placed on JASMIN and run on a MASS Server.
 # The script will get multiple files between two specified dates and either concatenate
