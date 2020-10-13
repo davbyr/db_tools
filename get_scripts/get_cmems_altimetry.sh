@@ -7,6 +7,12 @@
 # two specified dates. The script will download data from all available altimeters
 # between these dates.
 #
+# For this script to work, you must have motuclient set up and meet the python requirements
+# set out on https://marine.copernicus.eu/faq/what-are-the-motu-and-python-requirements/.
+# Motu client can be easily installed using pip:
+#
+#		python -m pip install motuclient
+#
 # All variables will be downloaded.
 #
 # ARGUMENTS:
@@ -26,10 +32,11 @@
 #							   '2018-03-30 23:24:54' ./cmems_data_dir 'j3'
 #
 # Some additional notes on getting data from CMEMS:
-# 	> service-id relates to the
+# 	> service-id relates to the main name of the product
 #		The suffix -DGF is Direct Get File. Alternatively, this might be -TSD (subsetter).
-#		I'm not sure is -TSD works for this altimetry data.
-# 	> product-id relates to the
+#		I'm not sure if -TSD works for this altimetry data.
+# 	> product-id relates to the products dataset names (see 
+#       https://resources.marine.copernicus.eu/documents/PUM/CMEMS-SL-PUM-008-032-062.pdf)
 # 	> motu-server is either my.cmems-du.eu or nrt.cmems-du.eu. my = multi year.
 #
 # It is possible that the service-id in this script may expire. Just change this variable
@@ -72,7 +79,7 @@ cd $out_dir
 for pid in "${pid_array[@]}"
 do
 	product_id='dataset-duacs-rep-global-'$pid'-phy-l3'
-    echo '|>>>>>> Downloading from: '$product_id
+	echo '|>>>>>> Downloading from: '$product_id
 	python -m motuclient --motu $motu_server --service-id $service_id \
 	--product-id $product_id \
 	--date-min $date_min --date-max $date_max \
