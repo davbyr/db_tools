@@ -5,6 +5,8 @@
 # by the desired function. e.g.
 #
 #		./nemo_build_tools build_xios_archer arg1 arg2
+#
+# See individual functions for more info on arguments.
 
 load_modules_archer() {
 	# Loads modules for compiling NEMO and XIOS on ARCHER
