@@ -53,7 +53,9 @@ build_nemo_archer() {
 
 }
 
-recompile_nemo_archer()
+recompile_nemo_archer(){
+
+}
 
 # This thing allows for the above functions to be called externally
 "$@"
