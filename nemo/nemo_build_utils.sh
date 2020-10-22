@@ -75,6 +75,12 @@ function checkout_nemo(){
 				version=$2
 				shift
 				;;
+			--)
+				shift
+				break
+				;;
+			*)
+				break
 		esac
 		shift
 	done
@@ -123,12 +129,17 @@ function compile_new_config(){
 				cpp_file=$2
 				shift
 				;;
+	                --)
+                                shift
+                                break
+                                ;;
+                        *)
+                                break
 		esac
 		shift
 	done
 	
 	export work_cfgs="OCE TOP"
-    export arch_file="arch-${arch_name}.fcm"
     export cfg_dir=$nemo_dir/cfgs/$cfg_name
 
 	# Load modules
@@ -138,8 +149,8 @@ function compile_new_config(){
 	if [ ! -d "$cfg_dir" ]; then
                 mkdir "$cfg_dir"
         fi
-	if [ ! -d "$out_dir/arch" ]; then
-                mkdir "$our_dir/arch"
+	if [ ! -d "$nemo_dir/arch" ]; then
+                mkdir "$nemo_dir/arch"
         fi
 	if [ ! -d "$cfg_dir/MY_SRC" ]; then
                 mkdir "$cfg_dir/MY_SRC"
@@ -154,7 +165,7 @@ function compile_new_config(){
 
 	# Set XIOS directory in arch file
 	export replace_line="%XIOS_HOME           ${xios_dir}"
-	sed -i "s|^%XIOS_HOME.*|${replace_line}|" $nemo_dir/arch/$arch_file
+	sed -i "s|^%XIOS_HOME.*|${replace_line}|" "$nemo_dir/arch/arch-${arch_name}.fcm"
 	
 	# Move MY_SRC files
 	cp $my_src/* $cfg_dir/MY_SRC
@@ -173,7 +184,7 @@ function build_config_from_repo() {
 				nemo_dir=$2
 				shift
 				;;
-			-r|--repo_dir
+			-r|--repo_dir)
 				repo_dir=$2
 				shift
 				;;
@@ -193,6 +204,12 @@ function build_config_from_repo() {
 				version=$2
 				shift
 				;;
+	                --)
+                                shift
+                                break
+                                ;;
+                        *)
+                                break
 		esac
 		shift
 	done
