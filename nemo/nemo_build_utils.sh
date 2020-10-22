@@ -31,7 +31,7 @@ function build_xios_archer() {
 		mkdir "$out_dir"
 	fi
 	
-    load_modules_archer
+	load_modules_archer
 
 	fancy_print "Downloading and compiling XIOS in $xios_dir"
 
@@ -49,33 +49,58 @@ function build_xios_archer() {
 	./make_xios --full --prod --arch $arch_name --netcdf_lib netcdf4_par --job 4
 }
 
-function build_nemo_archer() {
+function build_nemo_v4_archer() {
 	# Downloads and compiles NEMO4
 	export out_dir=$1
 	export repo_dir=$2
 	export arch_name=$3
 	export cfg_name=$4
+	export xios_dir=$5 
+
+	export work_cfgs="OCE TOP"
+        export version="4.0.2"
+
+        export arch_file="arch-${arch_name}.fcm"
+        export arch_dir=$out_dir/arch
+        export cfg_dir=$out_dir/cfgs/$cfg_name
 	
 	# Load modules
 	load_modules_archer
 	
 	# Download NEMO source code
-	svn co http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.2 $out_dir
-	
+        #export svn_url="http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r${version}"
+	#svn co $svn_url $out_dir
+        svn co http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.2 --depth empty $out_dir
+	svn co http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.2/src --depth infinity $out_dir/src
+	svn co http://forge.ipsl.jussieu.fr/nemo/svn/utils/build/mk $out_dir/mk
+	svn co http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.2/cfgs/SHARED $out_dir/cfgs/SHARED
+	svn export http://forge.ipsl.jussieu.fr/nemo/svn/NEMO/releases/r4.0/r4.0.2/cfgs/ref_cfgs.txt $out_dir/cfgs/ref_cfgs.txt
+	svn co http://forge.ipsl.jussieu.fr/nemo/svn/vendors/FCM $out_dir/ext/FCM
+	svn co http://forge.ipsl.jussieu.fr/nemo/svn/vendors/IOIPSL $out_dir/ext/IOIPSL
+	svn export http://forge.ipsl.jussieu.fr/nemo/svn/utils/build/makenemo $out_dir/makenemo	
+
 	# Sort out directories and copy arch files
-	mkdir cfgs/$cfg_name
-	export cfg_dir=$out_dir/cfgs/$cfg_name
-	
-	export arch_file="arch-${arch_name}.fcm"
+        mkdir $cfg_dir         
+
+	# Move arch files to where they need to be	
+        mkdir $arch_dir
 	cp $repo_dir/arch/nemo/$arch_file $out_dir/arch 
 	cp $repo_dir/"cpp_${cfg_name}.fcm" $cfg_dir
+        echo $cfg_dir
 	
 	# Create work_cfgs file
-	echo "$cfg_name OCE TOP" >> ./cfgs/work_cfgs.txt
+        echo "$cfg_name $work_cfgs"
+	echo "$cfg_name $work_cfgs" > $out_dir/cfgs/work_cfgs.txt
+
+	# Set XIOS directory in arch file
+	export xios_line="%XIOS_HOME           ${xios_dir}"
+	sed -i "s|^%XIOS_HOME.*|${xios_line}|" $arch_dir/$arch_file
 	
 	# Compile NEMO
-	echo "Compiling NEMO $cfg_name Config"
-    ./makenemo -m $arch_name -r $cfg_name -j 10
+	cd $out_dir
+        echo "Compiling NEMO $cfg_name Config"
+	echo "./makenemo -m $arch_name -r $cfg_name -j 10"
+        ./makenemo -m $arch_name -r $cfg_name -j 10
 }
 
 
