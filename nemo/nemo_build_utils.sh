@@ -121,7 +121,7 @@ function compile_nemo_config(){
 
 	while :; do
 		case $1 in
-			-h|--help)
+			-h|--help|-\?)
 				echo ' Compiles a NEMO configuration on ARCHER, new or existing. '
 				echo ' '
 				echo ' Flags:  -n, --nemo_dir   Full path to NEMO directory. '
@@ -133,8 +133,8 @@ function compile_nemo_config(){
 				echo '         -p, --cpp_file   [Optional] Full path to NEMO cpp flags file to use. '
 				echo ' '
 				echo ' If optional files are not provided, they will be assumed already present in '
-				echo ' the NEMO directory. If specified paths don\'t exist, they will be created.'
-				shift
+				echo ' the NEMO directory. If specified paths do not exist, they will be created.'
+				exit
 				;;
 			-n|--nemo_dir)
 				nemo_dir=$2
@@ -223,21 +223,20 @@ function build_config_from_repo() {
 			-h|--help)
 				echo ' Downloads XIOS, NEMO and compiles using files from Github repo. '
 				echo ' If code has already been downloaded for either XIOS or NEMO, use '
-				echo ' --no_xios or --no_nemo flags to skip the download steps (and install '
-				echo ' step for XIOS. '
+				echo ' --no_xios or --no_nemo flags to skip the download steps '
 				echo ' '
 				echo ' Flags:  -n, --nemo_dir   Full path to NEMO directory. '
 				echo '         -x, --xios_dir   Full path to XIOS directory. '
 				echo '         -x, --repo_dir   Full path to repository directory. '
 				echo '         -c, --cfg_name   Name of the configuration to compile. '
-				echo '         -b, --arch_name  Architecture name (arch-<arch_name>.fcm).'
+				echo '         -b, --arch_name  Architecture name arch-<arch_name>.fcm.'
 				echo '		   -v, --version    NEMO version to download. '
 				echo '             --no_xios    Skip download and install of XIOS. '
-				echo '			   --no_nemo	Skip download of NEMO (will still compile). '
+				echo '			   --no_nemo	Skip download of NEMO but will still compile. '
 				echo ' '
 				echo ' Currently, arch_name is assumed to be the same for NEMO and XIOS. '
-				echo ' --version only specifies the NEMO version to download. '
-				shift
+				echo ' Version only specifies the NEMO version to download. '
+				exit
 				;;
 			-n|--nemo_dir)
 				nemo_dir=$2
