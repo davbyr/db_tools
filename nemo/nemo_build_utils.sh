@@ -218,6 +218,10 @@ function compile_nemo_config(){
 }
 
 function build_config_from_repo() {
+
+		get_xios=1
+		get_nemo=1
+
 		while :; do
 		case $1 in
 			-h|--help)
@@ -227,7 +231,7 @@ function build_config_from_repo() {
 				echo ' '
 				echo ' Flags:  -n, --nemo_dir   Full path to NEMO directory. '
 				echo '         -x, --xios_dir   Full path to XIOS directory. '
-				echo '         -x, --repo_dir   Full path to repository directory. '
+				echo '         -r, --repo_dir   Full path to repository directory. '
 				echo '         -c, --cfg_name   Name of the configuration to compile. '
 				echo '         -b, --arch_name  Architecture name arch-<arch_name>.fcm.'
 				echo '		   -v, --version    NEMO version to download. '
@@ -263,12 +267,10 @@ function build_config_from_repo() {
 				shift
 				;;
 			--no_xios)
-				no_xios=true
-				shift
+				get_xios=0
 				;;
 			--no_nemo)
-				no_nemo=true
-				shift
+				get_nemo=0
 				;;
 	        --)
                 shift
@@ -280,19 +282,19 @@ function build_config_from_repo() {
 		shift
 	done
 	
-	$arch_file="$repo_dir/arch/arch-${arch_name}.fcm"
-	$my_src="$repo_dir/MY_SRC"
-	$cpp_file="$repo_dir/cpp_${cfg_name}.fcm"
-	
-	if [ ! $no_xios ]; then
+	arch_file="${repo_dir}/arch/nemo/arch-${arch_name}.fcm"
+	my_src="${repo_dir}/MY_SRC"
+	cpp_file="${repo_dir}/cpp_${cfg_name}.fcm"
+
+	if [ $get_xios == 1 ]; then
 		download_and_compile_xios -o $xios_dir -a $repo_dir/arch/xios -b $arch_name
 	fi
 	
-	if [ ! $no_nemo ]; then
-		checkout_nemo $nemo_dir $version
+	if [ $get_nemo == 1 ]; then
+		checkout_nemo -o $nemo_dir -v $version
 	fi
 	
-	compile_new_config -n $nemo_dir -x $xios_dir -c co9-amm15 -a $arch_file -b $arch_name \
+	compile_nemo_config -n $nemo_dir -x $xios_dir -c co9-amm15 -a $arch_file -b $arch_name \
 					   -m $my_src -p $cpp_file
 }
 
